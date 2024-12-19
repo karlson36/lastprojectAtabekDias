@@ -1,0 +1,559 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      layout:decorator="layout/main.html"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.thymeleaf.org "
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div layout:fragment = "site_content">
+
+<!--    <ul class="nav" sec:authorize="hasRole('ROLE_ADMIN')">-->
+<!--        <li class="nav-item">-->
+<!--            <button class = "btn btn-outline-primary" type="button" onclick="showItems()"  href="#">Items</button>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--            <button class = "btn btn-outline-primary" type="button" onclick="showBrands()" href="#">Brands</button>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--            <button class = "btn btn-outline-primary" type="button" onclick="showCountries()" href="#">Countries</button>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--            <button class = "btn btn-outline-primary" type="button" onclick="showCategories()" href="#">Categories</button>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--            <button class = "btn btn-outline-primary" type="button" onclick="showUsers()" href="#">Users</button>-->
+<!--        </li>-->
+<!--        <li class="nav-item">-->
+<!--            <button class = "btn btn-outline-primary" type="button" onclick="showSoldItems()" href="#">Sold Items</button>-->
+<!--        </li>-->
+<!--    </ul>-->
+
+
+
+    <div class="row">
+        <div class="col-3" style="margin-top: 130px">
+        <ul class="list-group">
+            <li class="list-group-item active" style="background-color: royalblue">Admin Panel</li>
+            <li class="list-group-item "  onclick="showItems()"  href="#">Items</li>
+            <li class="list-group-item" onclick="showBrands()" href="#">Brands</li>
+            <li class="list-group-item" onclick="showCountries()" href="#">Countries</li>
+            <li class="list-group-item" onclick="showCategories()" href="#">Categories</li>
+            <li class="list-group-item" onclick="showUsers()" href="#">Users</li>
+            <li class="list-group-item" onclick="showSoldItems()" href="#">Sold Items</li>
+        </ul>
+        </div>
+        <div class="col-9">
+    <div id = "items">
+
+    <button class="btn mt-4" style="background-color: royalblue; color: white" data-toggle="modal" data-target="#addItemModal"><span th:text="#{label.button_label}"></span></button>
+
+
+    <div aria-hidden="true" class="modal fade" id="addItemModal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg" role="document">
+            <form method="post" th:action="@{'/admin/addItem'}">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"> <span th:text="#{label.edit}"></span></h5>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="form-group">
+                            <label for="itemName"><span th:text="#{label.label_item_name}"></span></label>
+                            <input class="form-control" id="itemName" name="itemName" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="itemDesc"><span th:text="#{label.label_item_desc}"></span></label>
+                            <textarea class="form-control" id="itemDesc" name="itemDesc"
+                                      rows="6"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="itemPrice"><span th:text="#{label.label_item_price}"></span></label>
+                            <input class="form-control" type="number" id="itemPrice" name="itemPrice" min="1" max="1000000000">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="itemRate"><span th:text="#{label.label_item_rating}"></span></label>
+                            <input class="form-control" type="number" id="itemRate" name="itemRate" min="1" max="5">
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="itemSmallPicUrl"><span th:text="#{label.label_small_item_pic_url}"></span></label>
+                            <input class="form-control" id="itemSmallPicUrl" name="itemSmallPicUrl" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="itemLargePicUrl"><span th:text="#{label.label_large_item_pic_url}"></span></label>
+                            <input class="form-control" id="itemLargePicUrl" name="itemLargePicUrl" type="text">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="inTopPage"><span th:text="#{label.label_in_top_page}"></span></label>
+                            <select class="form-control" id="inTopPage" name="inTopPage">
+                                <option th:value="true" th:text="#{label.label_in_top_page_option_yes}"></option>
+                                <option th:value="false" th:text="#{label.label_in_top_page_option_no}"></option>
+                                 </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="itemLargePicUrl"><span th:text="#{label.brand}"></span></label>
+                            <select class="form-control" name="brand_id">
+                                <option th:each="brn : ${brands}" th:text="${brn.name}" th:value="${brn.id}"></option>
+                            </select>
+                        </div>
+
+
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary"  data-toggle="modal" type="button">
+                                <span th:text="#{label.button_cancel}"></span>
+                            </button>
+                            <button class="btn btn-success" type="submit"><span th:text="#{label.button_submit}"></span></button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+    <div class="row mt-5">
+        <div class="col-12">
+            <table class="table table-striped" >
+                <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col"><span th:text="#{label.label_item_name}"></span></th>
+                    <th scope="col" width="10%"><span th:text="#{label.change}"></span></th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="item : ${items}">
+                    <td th:text="${item.id}"></td>
+                    <td th:text="${item.name}"></td>
+                   <td><a th:href="@{'/admin/admin_item_details/' + ${item.id}}" class="btn btn-info" ><span th:text="#{label.change}"></span></a></td>
+
+                </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <div class="d-none" id = "brands">
+
+        <button class="btn mt-4" style="background-color: royalblue; color: white" data-toggle="modal" data-target="#addBrandModal"><span th:text="#{label.button_label}"></span></button>
+
+
+        <div aria-hidden="true" class="modal fade" id="addBrandModal" role="dialog" tabindex="-1">
+            <div class="modal-dialog modal-lg" role="document">
+                <form method="post" th:action="@{'/admin/addBrand'}">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"> <span th:text="#{label.edit}"></span></h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <label for="brandName"><span th:text="#{label.label_item_name}"></span></label>
+                                <input class="form-control" id="brandName" name="brandName" type="text">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="itemLargePicUrl"><span th:text="#{label.country}"></span></label>
+                                <select class="form-control" name="country_id">
+                                    <option th:each="cnt : ${countries}" th:text="${cnt.name}" th:value="${cnt.id}"></option>
+                                </select>
+                            </div>
+
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary"  data-toggle="modal" type="button">
+                                    <span th:text="#{label.button_cancel}"></span>
+                                </button>
+                                <button class="btn btn-success" type="submit"><span th:text="#{label.button_submit}"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <table class="table table-striped" >
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col"><span th:text="#{label.label_item_name}"></span></th>
+                        <th scope="col" width="10%"><span th:text="#{label.change}"></span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="brn : ${brands}">
+                        <td th:text="${brn.id}"></td>
+                        <td th:text="${brn.name}"></td>
+                        <td><a data-toggle="modal" th:data-target="${'#changeBrand' + brn.getId()}" class="btn btn-info" ><span th:text="#{label.change}"></span></a></td>
+                        <!-- th:target="#{'changeItem'+ ${item.id}}"-->
+                        <div aria-hidden="true" class="modal fade" th:id="${'changeBrand' + brn.getId()}" role="dialog" tabindex="-1">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <form method="post" th:action="@{'/admin/changeBrand'}">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"> <span th:text="#{label.edit}"></span></h5>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id_brand" th:value="${brn.id}">
+                                            <div class="form-group">
+                                                <label for="brandName1"><span th:text="#{label.label_item_name}"></span></label>
+                                                <input required class="form-control" th:value="${brn.name}" id="brandName1" name="brandName1" type="text">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="itemLargePicUrl"><span th:text="#{label.country}"></span></label>
+                                                <select class="form-control" name="country_id1">
+                                                    <option th:each="cnt : ${countries}" th:text="${cnt.name}" th:value="${cnt.id}" th:selected="${brn.getCountry().id.equals(cnt.id) ? true : false}"></option>
+                                                </select>
+                                            </div>
+
+
+                                            <div class="modal-footer">
+                                                <a class="btn btn-danger" th:href="@{'/admin/deleteBrand/' + ${brn.id}}">
+                                                    <span th:text="#{label.delete}"></span>
+                                                </a>
+                                                <button class="btn btn-success" type="submit"><span th:text="#{label.save}"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-none" id = "countries">
+
+        <button class="btn mt-4" style="background-color: royalblue; color: white" data-toggle="modal" data-target="#addCountryModal"><span th:text="#{label.button_label}"></span></button>
+
+
+        <div aria-hidden="true" class="modal fade" id="addCountryModal" role="dialog" tabindex="-1">
+            <div class="modal-dialog modal-lg" role="document">
+                <form method="post" th:action="@{'/admin/addCountry'}">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"> <span th:text="#{label.edit}"></span></h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <label for="brandName"><span th:text="#{label.label_item_name}"></span></label>
+                                <input class="form-control" id="CountryName" name="countryName" type="text">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="brandName"><span th:text="#{label.code}"></span></label>
+                                <input class="form-control" id="CountryCode" name="countryCode" type="text">
+                            </div>
+
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary"  data-toggle="modal" type="button">
+                                    <span th:text="#{label.button_cancel}"></span>
+                                </button>
+                                <button class="btn btn-success" type="submit"><span th:text="#{label.button_submit}"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <table class="table table-striped" >
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col"><span th:text="#{label.label_item_name}"></span></th>
+                        <th scope="col" width="10%"><span th:text="#{label.change}"></span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="cnt : ${countries}">
+                        <td th:text="${cnt.id}"></td>
+                        <td th:text="${cnt.name}"></td>
+                        <td><a data-toggle="modal" th:data-target="${'#changeCountry' + cnt.getId()}" class="btn btn-info" ><span th:text="#{label.change}"></span></a></td>
+                        <!-- th:target="#{'changeItem'+ ${item.id}}"-->
+                        <div aria-hidden="true" class="modal fade" th:id="${'changeCountry' + cnt.getId()}" role="dialog" tabindex="-1">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <form method="post" th:action="@{'/admin/changeCountry'}">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"> <span th:text="#{label.edit}"></span></h5>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id_country" th:value="${cnt.id}">
+                                            <div class="form-group">
+                                                <label ><span th:text="#{label.label_item_name}"></span></label>
+                                                <input required class="form-control" th:value="${cnt.name}" id="countryName1" name="countryName1" type="text">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label><span th:text="#{label.code}"></span></label>
+                                                <input required class="form-control" th:value="${cnt.code}" id="countryCode1" name="countryCode1" type="text">
+                                            </div>
+
+
+                                            <div class="modal-footer">
+                                                <a class="btn btn-danger" th:href="@{'/admin/deleteCountry/' + ${cnt.id}}">
+                                                    <span th:text="#{label.delete}"></span>
+                                                </a>
+                                                <button class="btn btn-success" type="submit"><span th:text="#{label.save}"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="d-none" id = "categories">
+        <button class="btn mt-4" style="background-color: royalblue; color: white" data-toggle="modal" data-target="#addCategoryModal"><span th:text="#{label.button_label}"></span></button>
+
+
+        <div aria-hidden="true" class="modal fade" id="addCategoryModal" role="dialog" tabindex="-1">
+            <div class="modal-dialog modal-lg" role="document">
+                <form method="post" th:action="@{'/admin/addCategory'}">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"> <span th:text="#{label.edit}"></span></h5>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="form-group">
+                                <label for="brandName"><span th:text="#{label.label_item_name}"></span></label>
+                                <input class="form-control" id="CategoryName" name="categoryName" type="text">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="brandName"><span th:text="#{label.code}"></span></label>
+                                <input class="form-control" id="CategoryURL" name="categoryURL" type="text">
+                            </div>
+
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary"  data-toggle="modal" type="button">
+                                    <span th:text="#{label.button_cancel}"></span>
+                                </button>
+                                <button class="btn btn-success" type="submit"><span th:text="#{label.button_submit}"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <table class="table table-striped" >
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col"><span th:text="#{label.label_item_name}"></span></th>
+                        <th scope="col" width="10%"><span th:text="#{label.change}"></span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="cat : ${categories}">
+                        <td th:text="${cat.id}"></td>
+                        <td th:text="${cat.name}"></td>
+                        <td><a data-toggle="modal" th:data-target="${'#changeCategory' + cat.getId()}" class="btn btn-info" ><span th:text="#{label.change}"></span></a></td>
+                        <!-- th:target="#{'changeItem'+ ${item.id}}"-->
+                        <div aria-hidden="true" class="modal fade" th:id="${'changeCategory' + cat.getId()}" role="dialog" tabindex="-1">
+                            <div class="modal-dialog modal-lg" role="document">
+                                <form method="post" th:action="@{'/admin/changeCategory'}">
+
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title"> <span th:text="#{label.edit}"></span></h5>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <input type="hidden" name="id_category" th:value="${cat.id}">
+                                            <div class="form-group">
+                                                <label ><span th:text="#{label.label_item_name}"></span></label>
+                                                <input required class="form-control" th:value="${cat.name}" id="CategoryName1" name="categoryName1" type="text">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label><span th:text="#{label.logoURL}"></span></label>
+                                                <input required class="form-control" th:value="${cat.getLogoURL()}" id="CategoryURL1" name="categoryURL1" type="text">
+                                            </div>
+
+
+                                            <div class="modal-footer">
+                                                <a class="btn btn-danger" th:href="@{'/admin/deleteCategory/' + ${cat.id}}">
+                                                    <span th:text="#{label.delete}"></span>
+                                                </a>
+                                                <button class="btn btn-success" type="submit"><span th:text="#{label.save}"></span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-none" id = "users">
+        <button class="btn mt-4" style="background-color: royalblue; color: white" data-toggle="modal" data-target="#addUserModal"><span th:text="#{label.button_label}"></span></button>
+
+
+        <div aria-hidden="true" class="modal fade" id="addUserModal" role="dialog" tabindex="-1">
+            <div class="modal-dialog modal-lg" role="document">
+
+                <form th:action="@{'/registration'}" method="post">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title"> <span th:text="#{label.edit}"></span></h5>
+                        </div>
+
+                        <div class="modal-body">
+                                <div class="form-group">
+                                    <label>Email : </label>
+                                    <input type="email" name="user_email" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Password : </label>
+                                    <input type="password" name="user_password" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Retype Password : </label>
+                                    <input type="password" name="user_re-password" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Full Name : </label>
+                                    <input type="text" name="user_fullname"  class="form-control" required>
+                                </div>
+                                <
+
+
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary"  data-toggle="modal" type="button">
+                                    <span th:text="#{label.button_cancel}"></span>
+                                </button>
+                                <button class="btn btn-success" type="submit"><span th:text="#{label.button_submit}"></span></button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <div class="row mt-5">
+            <div class="col-12">
+                <table class="table table-striped" >
+                    <thead>
+                    <tr>
+                        <th scope="col">ID</th>
+
+                        <th scope="col">Email</th>
+                        <th scope="col"><span th:text="#{label.label_item_name}"></span></th>
+                        <th scope="col" width="10%"><span th:text="#{label.change}"></span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="user : ${users}">
+
+                        <td th:text="${user.id}"></td>
+                        <td th:text="${user.email}"></td>
+                        <td th:text="${user.fullName}"></td>
+                        <td><a th:href="@{'/editUser/' + ${user.id}}" class="btn btn-info" ><span th:text="#{label.change}"></span></a></td>
+
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="d-none" id = "soldItems">
+
+        <div class="row mt-5" >
+            <div class="col-12" style="margin-top: 80px">
+                <table class="table table-striped" >
+                    <thead>
+                    <tr>
+                        <th scope="col">Item</th>
+                        <th scope="col">Date</th>
+                        <th scope="col">Amount</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="item : ${sold_items}">
+
+                        <td th:text="${item.getItem().name}"></td>
+                        <td th:text="${item.getBuyDate()}"></td>
+                        <td th:text="${item.getAmount()}"></td>
+
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+
+    <script th:src="@{'/js/main.js'}"></script>
+</div>
+</html>

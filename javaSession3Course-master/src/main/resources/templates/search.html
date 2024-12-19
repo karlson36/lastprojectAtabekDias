@@ -1,0 +1,96 @@
+<html layout:decorator="layout/main.html" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.thymeleaf.org ">
+<div layout:fragment="site_content">
+
+    <div class="row mt-5">
+        <div class="col-3">
+            <div th:insert = "~{layout/left_col.html}"></div>
+        </div>
+
+        <div class="col-9">
+
+            <form method="get" th:action="@{'/order_search'}">
+                <div class="row mb-2">
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="itemName"><span th:text="#{label.label_item_name} + ':'"></span></label>
+                            <input class="form-control" th:value="${search_name}" id="itemName" name="itemName" type="text">
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="form-group">
+                            <label for="itemName"><span th:text="#{label.brand} + ':'"></span></label>
+                            <select class="form-control" name="brand_id">
+                                <option th:each="brn : ${brands}" th:text="${brn.name}" th:value="${brn.id}" th:selected="${brn.id.equals(brand_id) ? true : false}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label for="itemName"><span th:text="#{label.price_from} + ':'"></span></label>
+                            <input class="form-control" th:value="${priceFrom}" id="priceFrom" name="priceFrom" type="text">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div class="form-group">
+                            <label for="itemName"><span th:text="#{label.price_to} + ':'"></span></label>
+                            <input class="form-control"  th:value="${priceTo}" id="priceTo" name="priceTo" type="text">
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <button class="btn" type="submit" style="width: 100%; background-color: royalblue; color: white;margin-top: 32px"><span th:text="#{label.search }"></span></button>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-5">
+                        <div class="form-group">
+                            <h2><span th:text="#{label.search_results} + ':'"></span></h2>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group d-flex flex-row-reverse bd-highlight">
+                            <h6><span th:text="#{label.order_by_price} + ':'"></span></h6>
+                        </div>
+                    </div>
+                    <div class="col-3" >
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons" style="width: 100%;">
+                            <label class="btn btn-secondary active" style="font-size: small">
+                                <input type="radio" value="ascending" name="options"  id="option1"><span style="font-size: small" th:text="#{label.ascending}"></span>
+                            </label>
+                            <label class="btn btn-secondary" style="font-size: medium">
+                                <input type="radio" value="descending"  name="options" id="option2"><span style="font-size: small" th:text="#{label.descending}"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div class="row">
+                <div class="col-4" style="margin-top: 20px" th:each="item : ${items}">
+                    <div class="card">
+                        <div class="img_card" style="height: 7rem; width: 15rem;">
+                            <img alt="..." class="card-img-top" style="max-width: 15rem; max-height: 6rem;"
+                                 th:src="@{${item.smallPicURL}}">
+                        </div>
+                        <div class="card-body" style="height: 130px">
+                            <a class="card-title" style="color: royalblue;font-size: x-large;text-decoration: none" th:href="@{'/details/' + ${item.id}}"
+                               th:text="${item.name}"></a>
+                            <h6 class="card-title" style="color: black" th:text="${'$' + item.price}"></h6>
+                            <h6 class="card-title" style="color: black"><a th:text="#{label.brand} + ${': ' + item.brand.getName() + ', ' + item.brand.getCountry().code}" th:href="@{'/order_search?itemName=&brand_id=' + ${item.getBrand().getId()} + '&priceFrom=0.0&priceTo=999999.0'}"></a></h6>
+                        </div>
+                        <div class="card-footer">
+                            <i class="fas fa-star" style="color: gold"
+                               th:each="i : ${#numbers.sequence(1, item.stars)}" th:if="${item.stars > 0}"></i>
+                            <i class="far fa-star" style="color: gold"
+                               th:each="i : ${#numbers.sequence(1, 5 - item.stars)}" th:if="${item.stars > 0}"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</html>

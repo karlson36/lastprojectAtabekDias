@@ -1,0 +1,38 @@
+<ul class="list-group">
+    <a class="list-group-item list-group-item-action active" href="#" style="background-color: royalblue">
+        <span style="color: white" th:text="#{label.categories }"></span>
+    </a>
+    <li class="list-group-item"><i
+            class="fas fa-shopping-cart"></i> <span th:text="#{label.category_all }"></span></li>
+
+        <li class="list-group-item" th:each="cat : ${categories}"><i th:class="${cat.logoURL}"></i> <a th:text="${cat.name} + ' '"  name= "brand_id"></a></li>
+
+</ul>
+
+
+<div class="list-group bg-dark mt-4 font-weight-bold">
+    <a class="list-group-item list-group-item-action active" href="#" style="background-color: royalblue" >
+        <span style="color: white" th:text="#{label.brands }"></span>
+    </a>
+    <div  th:each="brand : ${brands}">
+    <a class="list-group-item list-group-item-action" th:href="@{'/order_search?itemName=&brand_id=' + ${brand.id} + '&priceFrom=0.0&priceTo=999999.0'}"  th:text="${brand.name}"  th:value="${brand.id}" name = "brand_id"></a>
+    </div>
+    <a class="list-group-item list-group-item-action" href="#"><span th:text="#{label.category_other }"></span></a>
+</div>
+
+<div class="list-group bg-dark mt-4 font-weight-bold">
+    <a class="list-group-item list-group-item-action active" href="#" style="background-color: royalblue">
+        <span style="color: white" th:text="#{label.payments }"></span>
+    </a>
+    <a class="list-group-item list-group-item-action" href="#" style="font-size: 2.9rem;">
+        <div class="container">
+            <i class="fab fa-cc-apple-pay"></i>
+            <i class="fab fa-cc-visa"></i>
+            <i class="fab fa-cc-paypal"></i>
+            <br>
+            <i class="fab fa-cc-amazon-pay"></i>
+            <i class="fab fa-cc-mastercard"></i>
+            <i class="fab fa-cc-amex"></i>
+        </div>
+    </a>
+</div>

@@ -1,0 +1,112 @@
+<html layout:decorator="layout/main.html" xmlns:layout="http://ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.thymeleaf.org ">
+<div layout:fragment="site_content">
+
+    <div class="row mt-5">
+        <div class="col-3">
+            <div th:insert="~{layout/left_col.html}"></div>
+        </div>
+
+        <div class="col-9 mb-5">
+            <div class="card border-0">
+                <div class="carousel slide" data-ride="carousel" id="carouselExampleIndicators">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active" th:if="${pictures.size() > 0}">
+                            <img class="d-block w-100" style="height: 400px"
+                                 th:src="@{'/admin/viewPicture/' + ${pictures.get(0).getUrl()}}">
+                        </div>
+                        <div class="carousel-item" th:each="picture : ${pictures}" th:if="${pictureStat.index != 0}">
+                            <img class="d-block w-100" style="height: 400px"
+                                 th:src="@{'/admin/viewPicture/' + ${picture.getUrl()}}">
+                        </div>
+
+                    </div>
+                    <a class="carousel-control-prev" data-slide="prev" href="#carouselExampleIndicators" role="button">
+                        <span aria-hidden="true" class="carousel-control-prev-icon"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" data-slide="next" href="#carouselExampleIndicators" role="button">
+                        <span aria-hidden="true" class="carousel-control-next-icon"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title" style="color: royalblue" th:text="${item.name}"></h3>
+                    <h4 class="card-title" style="color: black" th:text="${'$' + item.price}"></h4>
+                    <p class="card-title" th:text="${item.description}"></p>
+                    <h4 class="card-title" style="color: black"
+                        th:text="#{label.brand} + ${ ': ' + item.brand.getName() + ', ' + item.brand.getCountry().name}"></h4>
+
+                </div>
+            </div>
+
+            <form class="d-flex justify-content-end" method="post" th:action="@{'/add_to_basket'}">
+                <input name="item_id" th:value="${item.id}" type="hidden">
+                <button class="btn btn-success mt-3" type="submit">Add to Basket</button>
+            </form>
+
+            <form method="post" sec:authorize="isAuthenticated()" th:action="@{'/add_comment'}">
+
+                <textarea name="comment" style="height: 100px; width: 100%"></textarea>
+                <input name="item_id" th:value="${item.id}" type="hidden">
+                <div class="d-flex justify-content-end">
+                    <button class="btn mt-2 " style="color: white;background-color: royalblue" type="submit"><i
+                            class="fas fa-comments"></i> Add Comment
+                    </button>
+                </div>
+            </form>
+
+
+            <div class="list-group" th:each="comment : ${comments}">
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1" th:text="${comment.getAuthor().getFullName()}"></h5>
+                        <small class="text-muted" th:text="${comment.getAddedDate()}"></small>
+                    </div>
+                    <div class="d-flex w-100 justify-content-between">
+                        <p class="mb-1" th:text="${comment.comment}"></p>
+                        <div class="d-flex justify-content-end" sec:authorize="isAuthenticated()">
+                            <a class="btn btn-dark" data-toggle="modal"
+                               th:data-target="${'#changeComment' + comment.getId()}" th:if="${currentUser.getId().equals(comment.getAuthor().getId())}"><i
+                                    class="fas fa-edit"></i></a>
+
+                            <a class="btn btn-danger ml-2"
+                               style="height: 31px" th:href="@{'/delete_comment/' + ${comment.id}}"
+                               th:if="${currentUser.getRoles().contains(admin) || currentUser.getRoles().contains(moderator) || currentUser.getId().equals(comment.getAuthor().getId())}"><i class="fas fa-trash"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div aria-hidden="true" class="modal fade" role="dialog" tabindex="-1"
+                     th:id="${'changeComment' + comment.getId()}">
+
+                    <div class="modal-dialog modal-lg" role="document">
+                        <form method="post" th:action="@{'/edit_comment'}">
+
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">New Comment</h5>
+                                </div>
+
+                                <div class="modal-body">
+                                    <input name="comment_id" th:value="${comment.id}" type="hidden">
+                                    <div class="form-group">
+                                        <textarea class="form-control" id="countryName1" name="comment"
+                                                  th:text="${comment.comment}"></textarea>
+                                    </div>
+
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-success" type="submit"><span th:text="#{label.save}"></span></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</html>
